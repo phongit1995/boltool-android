@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_gravity="center"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:background="@drawable/stroke_background2"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:fontFamily="@font/nunito_bold"
+            android:layout_marginTop="20dp"
+            android:text="Nhập mã phần mềm"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="22dp"/>
+        <EditText
+            android:textColor="@color/white"
+            android:id="@+id/edtCode"
+            android:paddingLeft="20dp"
+            android:layout_margin="20dp"
+            android:background="@drawable/stroke_background3"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Nhập mã phần mềm"/>
+        <TextView
+            android:fontFamily="@font/nunito_bold"
+            android:text="Nhận Mã Phần Mềm duy nhất tại \nHotline/Zalo: 0979 51 7777"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white" />
+        <RelativeLayout
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:orientation="vertical"
+                android:id="@+id/confirm"
+                android:layout_marginLeft="20dp"
+                android:background="@drawable/confirm_button_background"
+                android:layout_width="100dp"
+                android:layout_height="40dp">
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:visibility="gone"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                </ProgressBar>
+                <TextView
+                    android:id="@+id/txtConfirm"
+                    android:layout_centerInParent="true"
+                    android:fontFamily="@font/nunito_bold"
+                    android:textColor="@color/white"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Xác nhận">
+                </TextView>
+            </RelativeLayout>
+            <LinearLayout
+                android:id="@+id/cancel"
+                android:layout_marginRight="20dp"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/cancle_button_background"
+                android:layout_width="100dp"
+                android:layout_height="40dp">
+                <TextView
+                    android:fontFamily="@font/nunito_bold"
+                    android:textColor="@color/white"
+                    android:gravity="center_horizontal"
+                    android:layout_gravity="center"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Hủy">
+                </TextView>
+            </LinearLayout>
+        </RelativeLayout>
+    </LinearLayout>
+
+</RelativeLayout>

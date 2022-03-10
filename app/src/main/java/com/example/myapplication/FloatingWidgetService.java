@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -21,14 +22,17 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import java.net.URISyntaxException;
 
 import io.socket.client.IO;
+import io.socket.client.On;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
+
 
 /**
  * Created by tuanthanhdev on 3/3/2022.
@@ -41,12 +45,12 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     private int x_init_cord, y_init_cord, x_init_margin, y_init_margin;
     private Socket mSocket;
     private ImageView imgTai, imgXiu;
-    private Handler handler;
-
-    Runnable blinkTai, blinkXiu;
-    private int timeBlinkTai = 1;
-    private int timeBlinkXiu = 1;
-    private ObjectAnimator animTai;
+    private ObjectAnimator animTai, animXiu;
+    String code;
+    private Handler handle;
+    boolean isRunningTai = false;
+    boolean isRunningXiu = false;
+    boolean isConnect = false;
 
     {
         try {
@@ -66,66 +70,35 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     }
 
     @Override
-    public void onCreate() {
-        super.onCreate();
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        code = intent.getStringExtra("code");
+        if (!isConnect) {
+            connectSocket();
+        }
+        mSocket.emit("joinRoom", code);
+        mSocket.on("notification", onNewMessage);
+        return super.onStartCommand(intent, flags, startId);
+    }
 
-        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-
-        getWindowManagerDefaultDisplay();
-
-        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-
-        addFloatingWidgetView(inflater);
-        implementClickListeners();
-        implementTouchListenerToFloatingWidgetView();
-        final Drawable[] colorsXiu = {getResources().getDrawable(R.drawable.circle_shape), getResources().getDrawable(R.drawable.xiu_background),
-                getResources().getDrawable(R.drawable.circle_shape), getResources().getDrawable(R.drawable.xiu_background),
-                getResources().getDrawable(R.drawable.circle_shape), getResources().getDrawable(R.drawable.xiu_background),
-                getResources().getDrawable(R.drawable.circle_shape), getResources().getDrawable(R.drawable.xiu_background),
-                getResources().getDrawable(R.drawable.circle_shape), getResources().getDrawable(R.drawable.xiu_background),
-                getResources().getDrawable(R.drawable.circle_shape), getResources().getDrawable(R.drawable.xiu_background)};
-        final Drawable[] colorsTai = {getResources().getDrawable(R.drawable.circle_shape), getResources().getDrawable(R.drawable.tai_background),
-                getResources().getDrawable(R.drawable.circle_shape), getResources().getDrawable(R.drawable.tai_background),
-                getResources().getDrawable(R.drawable.circle_shape), getResources().getDrawable(R.drawable.tai_background),
-                getResources().getDrawable(R.drawable.circle_shape), getResources().getDrawable(R.drawable.tai_background),
-                getResources().getDrawable(R.drawable.circle_shape), getResources().getDrawable(R.drawable.tai_background),
-                getResources().getDrawable(R.drawable.circle_shape), getResources().getDrawable(R.drawable.tai_background)};
+    private void connectSocket() {
         mSocket.connect();
         mSocket.on(Socket.EVENT_CONNECT, onConnect);
         mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
-        mSocket.emit("joinRoom", "123");
-        mSocket.on("notification", onNewMessage);
-        handler = new Handler();
-        blinkTai = new Runnable() {
-            @Override
-            public void run() {
-                imgTai.setBackground(colorsTai[timeBlinkTai - 1]);
-            }
-        };
-        blinkXiu = new Runnable() {
-            @Override
-            public void run() {
-                imgXiu.setBackground(colorsXiu[timeBlinkXiu - 1]);
-            }
-        };
-        test1();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                test2();
-            }
-        }, 3000); // 5 seconds
     }
 
-    private void test1() {
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+        getWindowManagerDefaultDisplay();
+        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+        addFloatingWidgetView(inflater);
+        implementClickListeners();
+        implementTouchListenerToFloatingWidgetView();
+        handle = new Handler(Looper.getMainLooper());
+        connectSocket();
         blinkTai();
-
-    }
-
-    private void test2() {
-        animTai.end();
         blinkXiu();
-
     }
 
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
@@ -135,8 +108,12 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
             Log.e("huhu", objects[0].toString());
             switch (objects[0].toString()) {
                 case "xanh":
+                    if (isRunningTai) handle.removeCallbacks(runnableTai);
+                    handle.post(runnableTai);
                     break;
                 case "do":
+                    if (isRunningXiu) handle.removeCallbacks(runnableXiu);
+                    handle.post(runnableXiu);
                     break;
                 default:
                     break;
@@ -145,59 +122,74 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         }
     };
 
+    private Runnable runnableTai = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                isRunningTai = true;
+                if (animTai != null && animTai.isRunning()) animTai.end();
+                if (animXiu != null && animXiu.isRunning()) animXiu.end();
+                blinkTai();
+            } catch (Exception e) {
+                e.printStackTrace();
+                isRunningTai = false;
+            }
+        }
+    };
+
+    private Runnable runnableXiu = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                isRunningXiu = true;
+                if (animTai != null && animTai.isRunning()) animTai.end();
+                if (animXiu != null && animXiu.isRunning()) animXiu.end();
+                blinkXiu();
+            } catch (Exception e) {
+                e.printStackTrace();
+                isRunningXiu = false;
+            }
+
+        }
+    };
+
     @SuppressLint("WrongConstant")
     private void blinkXiu() {
-        ObjectAnimator anim = ObjectAnimator.ofInt(imgXiu, "backgroundColor", Color.WHITE, Color.RED);
-        anim.setDuration(400);
-        anim.setEvaluator(new ArgbEvaluator());
-        anim.setRepeatMode(Animation.REVERSE);
-        anim.setRepeatCount(Animation.INFINITE);
-        anim.start();
+        animXiu = ObjectAnimator.ofInt(imgXiu, "backgroundColor", Color.RED, Color.WHITE, Color.RED);
+        animXiu.setDuration(1000);
+        animXiu.setEvaluator(new ArgbEvaluator());
+        animXiu.setRepeatMode(Animation.REVERSE);
+        animXiu.setRepeatCount(5);
+        animXiu.start();
     }
-
-    @SuppressLint("WrongConstant")
-    private void blinkXiuDefault() {
-        ObjectAnimator anim = ObjectAnimator.ofInt(imgXiu, "backgroundColor", Color.WHITE);
-        anim.setDuration(400);
-        anim.setEvaluator(new ArgbEvaluator());
-        anim.setRepeatMode(Animation.REVERSE);
-        anim.setRepeatCount(Animation.INFINITE);
-        anim.start();
-    }
-
-    @SuppressLint("WrongConstant")
-    private void blinkTaiDefault() {
-        ObjectAnimator anim = ObjectAnimator.ofInt(imgXiu, "backgroundColor", Color.WHITE);
-        anim.setDuration(400);
-        anim.setEvaluator(new ArgbEvaluator());
-        anim.setRepeatMode(Animation.REVERSE);
-        anim.setRepeatCount(Animation.INFINITE);
-        anim.start();
-    }
-
 
     @SuppressLint("WrongConstant")
     private void blinkTai() {
-        animTai = ObjectAnimator.ofInt(imgTai, "backgroundColor", Color.WHITE, Color.BLUE);
-        animTai.setDuration(400);
+        animTai = ObjectAnimator.ofInt(imgTai, "backgroundColor", Color.GREEN, Color.WHITE, Color.GREEN);
+        animTai.setDuration(1000);
         animTai.setEvaluator(new ArgbEvaluator());
         animTai.setRepeatMode(Animation.REVERSE);
-        animTai.setRepeatCount(Animation.INFINITE);
+        animTai.setRepeatCount(5);
         animTai.start();
     }
-
 
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            Log.d("huhu", "connected...");
+            isConnect = true;
         }
     };
 
     private Emitter.Listener onConnectError = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            Log.d("huhu", "Error connecting...");
+            isConnect = false;
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(FloatingWidgetService.this, "Đã có lỗi trong quá trình kết nối . Vui lòng thử lại sau", Toast.LENGTH_LONG).show();
+                }
+            });
         }
     };
 
@@ -374,8 +366,6 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         if (mFloatingWidgetView != null)
             mWindowManager.removeView(mFloatingWidgetView);
         mSocket.disconnect();
-        handler.removeCallbacks(blinkXiu);
-        handler.removeCallbacks(blinkTai);
     }
 
 }

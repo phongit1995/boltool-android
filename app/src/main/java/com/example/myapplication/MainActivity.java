@@ -5,21 +5,15 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
-import android.util.Log;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
-
 import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -32,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private GridLayoutManager gridLayoutManager;
     private VerifyCodeDialog dialog;
     private static final int DRAW_OVER_OTHER_APP_PERMISSION_REQUEST_CODE = 1222;
+    private String codeRoom;
 
 
     @Override
@@ -58,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
                             dialog = VerifyCodeDialog.newInstance(new VerifyCodeDialog.Callback() {
                                 @Override
                                 public void onConfirm(String code) {
+                                    codeRoom =code;
                                     verifyCode(code);
                                 }
                             });
@@ -95,7 +91,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startFloatingWidgetService() {
-        startService(new Intent(MainActivity.this, FloatingWidgetService.class));
+        Intent intent = new Intent(MainActivity.this, FloatingWidgetService.class);
+        intent.putExtra("code",codeRoom);
+        startService(intent);
     }
 
     @Override

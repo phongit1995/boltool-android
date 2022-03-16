@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Bot IT 4.0</string>
     <string name="draw_other_app_permission_denied">Quyền vẽ trên ứng dụng khác không khả dụng. Ứng dụng sẽ không hoạt động nếu không được phép. Vui lòng thử lại.</string>
 </resources>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <RelativeLayout
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/nunito_bold"
+            android:text="Đang lấy dữ liệu cổng game"
+            android:textColor="@color/white"
+            android:textSize="24dp" />
+
+        <com.daimajia.numberprogressbar.NumberProgressBar
+            android:layout_below="@+id/title"
+            android:id="@+id/numberbar1"
+            style="@style/NumberProgressBar_Default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            custom:progress_current="0" />
+
+        <TextView
+            android:id="@+id/loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/numberbar1"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="@font/nunito_bold"
+            android:text="Loading ..."
+            android:textColor="@color/white"
+            android:textSize="24dp" />
+    </RelativeLayout>
+</RelativeLayout>

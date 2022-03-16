@@ -2,66 +2,80 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="60dp"
     android:layout_height="wrap_content">
-
     <!--   Root container of Floating Widget View  -->
     <RelativeLayout
         android:id="@+id/root_container"
-        android:layout_width="80dp"
+        android:layout_width="60dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/stroke_background3">
+        android:layout_marginTop="7dp"
+        android:background="@drawable/stroke_background4">
 
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             android:orientation="vertical"
             android:visibility="visible">
 
-            <androidx.cardview.widget.CardView
+            <RelativeLayout
                 android:id="@+id/cardTai"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_below="@+id/close_floating_view"
-                android:layout_centerHorizontal="true"
-                app:cardCornerRadius="25dp"
-                tools:ignore="ContentDescription">
-
-                <ImageView
-                    android:id="@+id/imgTai"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/tai_background"
-                    tools:ignore="ContentDescription" />
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_below="@+id/cardTai"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="10dp"
-                app:cardCornerRadius="25dp">
-
-                <ImageView
-                    android:id="@+id/imgXiu"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/xiu_background"
-                    tools:ignore="ContentDescription" />
-            </androidx.cardview.widget.CardView>
-
-
-            <ImageView
-                android:id="@+id/close_floating_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_margin="5dp"
-                android:background="@drawable/circle_shape"
-                android:src="@drawable/ic_close_white_24dp"
-                tools:ignore="ContentDescription" />
+                android:background="@drawable/transparent_background_stroke">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_margin="1dp"
+                    app:cardCornerRadius="25dp"
+                    tools:ignore="ContentDescription">
+
+                    <ImageView
+                        android:id="@+id/imgTai"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/tai_background"
+                        tools:ignore="ContentDescription" />
+                </androidx.cardview.widget.CardView>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/cardTai"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/transparent_background_stroke">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_margin="1dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_centerHorizontal="true"
+                    app:cardCornerRadius="25dp">
+
+                    <ImageView
+                        android:id="@+id/imgXiu"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/xiu_background"
+                        tools:ignore="ContentDescription" />
+                </androidx.cardview.widget.CardView>
+            </RelativeLayout>
         </RelativeLayout>
     </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/close_floating_view"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="end"
+        android:background="@drawable/circle_shape"
+        android:src="@drawable/ic_close_white_24dp"
+        tools:ignore="ContentDescription" />
 </FrameLayout>

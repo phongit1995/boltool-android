@@ -3,7 +3,10 @@ package com.example.myapplication;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -97,8 +100,8 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         implementTouchListenerToFloatingWidgetView();
         handle = new Handler(Looper.getMainLooper());
         connectSocket();
-        blinkTai();
-        blinkXiu();
+        blinkTai(500,6);
+        blinkXiu(500,6);
     }
 
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
@@ -129,7 +132,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                 isRunningTai = true;
                 if (animTai != null && animTai.isRunning()) animTai.end();
                 if (animXiu != null && animXiu.isRunning()) animXiu.end();
-                blinkTai();
+                blinkTai(500,16);
             } catch (Exception e) {
                 e.printStackTrace();
                 isRunningTai = false;
@@ -144,7 +147,7 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
                 isRunningXiu = true;
                 if (animTai != null && animTai.isRunning()) animTai.end();
                 if (animXiu != null && animXiu.isRunning()) animXiu.end();
-                blinkXiu();
+                blinkXiu(500,16);
             } catch (Exception e) {
                 e.printStackTrace();
                 isRunningXiu = false;
@@ -154,22 +157,22 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
     };
 
     @SuppressLint("WrongConstant")
-    private void blinkXiu() {
+    private void blinkXiu(int duration, int repeat) {
         animXiu = ObjectAnimator.ofInt(imgXiu, "backgroundColor", Color.RED, Color.WHITE, Color.RED);
-        animXiu.setDuration(1000);
+        animXiu.setDuration(duration);
         animXiu.setEvaluator(new ArgbEvaluator());
         animXiu.setRepeatMode(Animation.REVERSE);
-        animXiu.setRepeatCount(5);
+        animXiu.setRepeatCount(repeat);
         animXiu.start();
     }
 
     @SuppressLint("WrongConstant")
-    private void blinkTai() {
+    private void blinkTai(int duration, int repeat) {
         animTai = ObjectAnimator.ofInt(imgTai, "backgroundColor", Color.GREEN, Color.WHITE, Color.GREEN);
-        animTai.setDuration(1000);
+        animTai.setDuration(duration);
         animTai.setEvaluator(new ArgbEvaluator());
         animTai.setRepeatMode(Animation.REVERSE);
-        animTai.setRepeatCount(5);
+        animTai.setRepeatCount(repeat);
         animTai.start();
     }
 
@@ -346,6 +349,8 @@ public class FloatingWidgetService extends Service implements View.OnClickListen
         switch (v.getId()) {
             case R.id.close_floating_view:
                 stopSelf();
+                CloseAppReceiver a = new CloseAppReceiver();
+                a.onReceive(this, null);
                 break;
         }
     }
